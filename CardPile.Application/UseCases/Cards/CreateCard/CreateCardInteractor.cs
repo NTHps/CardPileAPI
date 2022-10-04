@@ -27,11 +27,11 @@ namespace CardPile.Application.UseCases.Cards.CreateCard
 
         public Task HandleAsync(CreateCardInputPort inputPort, ICreateCardOutputPort outputPort, CancellationToken cancellationToken)
         {
-            var _Recipe = this.m_Mapper.Map<CreateCardDto>(inputPort);
-
+            var _Card = this.m_Mapper.Map<Card>(inputPort);
+            _Card.CardID = 1;
             //this.m_PersistenceContext.Add(_Recipe);
 
-            return outputPort.PresentCreatedCardAsync(_Recipe, cancellationToken);
+            return outputPort.PresentCreatedCardAsync(this.m_Mapper.Map<CreatedCardDto>(_Card), cancellationToken);
         }
 
         #endregion IUseCaseInteractor Implementation

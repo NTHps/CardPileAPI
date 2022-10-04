@@ -23,7 +23,7 @@ namespace CardPileAPI.Presentation.Presenters.Cards
 
         #region - - - - - - Methods - - - - - -
 
-        public Task PresentCreatedCardAsync(CreateCardDto ingredient, CancellationToken cancellationToken)
+        public Task PresentCreatedCardAsync(CreatedCardDto ingredient, CancellationToken cancellationToken)
         {
             this.PresentedSuccessfully = true;
             return this.CreatedAsync(() => this.m_Mapper.Map<CardViewModel>(ingredient));

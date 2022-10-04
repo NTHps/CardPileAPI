@@ -12,7 +12,7 @@ namespace CardPile.Application.UseCases.Cards.CreateCard
 
         #region - - - - - - Methods - - - - - -
 
-        Task PresentCreatedCardAsync(CreateCardDto card, CancellationToken cancellationToken);
+        Task PresentCreatedCardAsync(CreatedCardDto card, CancellationToken cancellationToken);
 
         #endregion Methods
 

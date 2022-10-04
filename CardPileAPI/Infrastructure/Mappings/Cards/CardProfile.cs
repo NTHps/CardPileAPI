@@ -15,7 +15,7 @@ namespace CardPileAPI.Infrastructure.Mappings.Cards
         {
             _ = this.CreateMap<CreateCardCommand, CreateCardInputPort>();
 
-            _ = this.CreateMap<CreateCardDto, CardViewModel>()
+            _ = this.CreateMap<CreatedCardDto, CardViewModel>()
                     .ForMember(dest => dest.CardID, opts => opts.MapFrom(src => src.CardID.Invoke()))
                     .ForMember(dest => dest.CardName, opts => opts.MapFrom(src => src.Name));
         }
