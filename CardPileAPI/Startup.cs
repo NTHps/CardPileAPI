@@ -11,6 +11,7 @@ using CleanArchitecture.Mediator.DependencyInjection;
 using CleanArchitecture.Mediator.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -136,7 +137,6 @@ namespace CardPile.WebApi
             => services.AddDbContext<IPersistenceContext, PersistenceContext>(options =>
             {
                 var _DataStorageOptions = configuration.GetSection("DataStorageSettings").Get<DataStorageOptions>();
-
                 options.UseSqlServer(_DataStorageOptions.DatabaseConnectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                     .EnableSensitiveDataLogging(sensitiveDataLoggingEnabled: true);
             });

@@ -29,13 +29,10 @@ namespace CardPile.Persistence.Persistence
         void IPersistenceContext.Remove<TEntity>(TEntity entity)
             => this.Remove(entity);
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    //            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceContext).Assembly);
-        //    base.OnModelCreating(modelBuilder);
-        //    modelBuilder.ApplyConfiguration(new CardConfiguration());
-        //    modelBuilder.ApplyConfiguration(new DeckListConfiguration());
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceContext).Assembly);
+
+        // Writing this here for future me: EntityFrameworkCore\Add-Migration CardPileDB -Context PersistenceContext
 
         #endregion IPersistenceContext Implementation
 
