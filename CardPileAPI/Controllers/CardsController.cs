@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CardPile.Application.Services.Persistence;
 using CardPile.Application.UseCases.Cards.CreateCard;
+using CardPile.Application.UseCases.Cards.DeleteCard;
 using CardPile.InterfaceAdapters.Controllers;
 using CardPileAPI.Presentation.Commands.Cards;
 using CardPileAPI.Presentation.Presenters.Cards;
@@ -44,6 +45,22 @@ namespace CardPileAPI.Controllers
             var _Presenter = new CreateCardPresenter(this.m_Mapper);
 
             await this.m_CardController.CreateCardAsync(this.m_Mapper.Map<CreateCardInputPort>(command), _Presenter, CancellationToken.None);
+
+            if (_Presenter.PresentedSuccessfully)
+                await this.m_PersistenceContext.SaveChangesAsync(CancellationToken.None);
+
+            return _Presenter.Result;
+        }
+
+        [HttpDelete("{cardID:long}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteIngredient([FromRoute] long cardID)
+        {
+            var _Presenter = new DeleteCardPresenter(this.m_Mapper);
+            var _Command = new DeleteCardCommand() { CardID = cardID };
+            await this.m_CardController.DeleteCardAsync(this.m_Mapper.Map<DeleteCardInputPort>(_Command), _Presenter, CancellationToken.None);
 
             if (_Presenter.PresentedSuccessfully)
                 await this.m_PersistenceContext.SaveChangesAsync(CancellationToken.None);

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CardPile.Application.Dtos;
 using CardPile.Application.UseCases.Cards.CreateCard;
 using CardPileAPI.Presentation.Commands.Cards;
 using CardPileAPI.Presentation.ViewModels.Cards;
@@ -17,6 +18,9 @@ namespace CardPileAPI.Infrastructure.Mappings.Cards
 
             _ = this.CreateMap<CreatedCardDto, CardViewModel>()
                     .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name));
+
+            _ = this.CreateMap<CardDto, CardViewModel>()
+                   .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name));
         }
 
         #endregion Constructors
