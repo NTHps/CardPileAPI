@@ -1,12 +1,13 @@
-﻿namespace CardPile.Domain.Entities
+﻿namespace CardPile.Application.Dtos
 {
 
-    public class Card
+    public class CardDto
     {
 
         #region - - - - - - Properties - - - - - -
 
         public long CardID { get; set; }
+
         public string Name { get; set; } = "";
 
         #endregion Properties

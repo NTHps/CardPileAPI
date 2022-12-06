@@ -6,9 +6,9 @@
 
         #region - - - - - - Properties - - - - - -
 
-        public Func<long> CardID { get; set; }
+        public long CardID { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         #endregion Properties
 

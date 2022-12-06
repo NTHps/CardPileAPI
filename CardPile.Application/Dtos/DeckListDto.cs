@@ -1,14 +1,14 @@
-﻿namespace CardPile.Domain.Entities
+﻿namespace CardPile.Application.Dtos
 {
 
-    public class DeckList
+    public class DeckListDto
     {
 
         #region - - - - - - Properties - - - - - -
 
         public long DeckListID { get; set; }
-        public ICollection<Card> Cards { get; set; }
         public string Name { get; set; } = "";
+        public List<CardDto> Cards { get; set; } = new();
 
         #endregion Properties
 

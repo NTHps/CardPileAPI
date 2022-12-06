@@ -16,7 +16,7 @@ namespace CardPile.Persistence.Configurations
 
             entity.Property(e => e.CardID);
 
-            entity.Property(e => e.CardName)
+            entity.Property(e => e.Name)
                 .IsRequired();
         }
 

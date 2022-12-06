@@ -14,7 +14,7 @@
         /// <summary>
         /// The Name of the Card.
         /// </summary>
-        public string CardName { get; set; }
+        public string Name { get; set; } = ""; 
 
         #endregion Properties
 

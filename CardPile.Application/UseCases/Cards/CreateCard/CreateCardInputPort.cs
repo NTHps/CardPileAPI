@@ -8,7 +8,7 @@ namespace CardPile.Application.UseCases.Cards.CreateCard
 
         #region - - - - - - Properties - - - - - -
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         #endregion Properties
 

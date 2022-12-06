@@ -29,7 +29,7 @@ namespace CardPileAPI.Infrastructure.ModelBinding
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
             if (context?.BindingInfo?.BindingSource?.CanAcceptDataFrom(BodyAndRouteBindingSource.BodyAndRoute) ?? false)
-                return new BodyAndRouteModelBinder(this.m_BodyModelBinderProvider.GetBinder(context), this.m_ComplexObjectModelBinderProvider.GetBinder(context));
+                return new BodyAndRouteModelBinder(this.m_BodyModelBinderProvider!.GetBinder(context), this.m_ComplexObjectModelBinderProvider.GetBinder(context));
 
             return null;
         }

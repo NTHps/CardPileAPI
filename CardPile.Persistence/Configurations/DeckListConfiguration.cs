@@ -16,7 +16,7 @@ namespace CardPile.Persistence.Configurations
 
             entity.Property(e => e.DeckListID);
 
-            entity.Property(e => e.DeckListName)
+            entity.Property(e => e.Name)
                 .IsRequired();
         }
 

@@ -5,15 +5,18 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardPileAPI", "CardPileAPI\CardPileAPI.csproj", "{9941B633-42F7-46A5-ADAA-4C3186E2CD80}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{C668FC0A-FF77-4299-AA11-4D51A37F8AFB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardPile.Domain", "CardPile.Domain\CardPile.Domain.csproj", "{69CC5F5F-64C7-43E8-90E3-701CB6C38D0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardPile.Application", "CardPile.Application\CardPile.Application.csproj", "{E4C5F286-093D-49B5-9889-D91300CB44AD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardPile.InterfaceAdapters", "CardPile.InterfaceAdapters\CardPile.InterfaceAdapters.csproj", "{CEA32A41-5FDA-4689-BA99-87696B060AFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardPile.Persistence", "CardPile.Persistence\CardPile.Persistence.csproj", "{D867E8FA-25DE-4D0D-9832-376E5B69E5F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardPile.Persistence", "CardPile.Persistence\CardPile.Persistence.csproj", "{D867E8FA-25DE-4D0D-9832-376E5B69E5F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF1321FA-45FC-44F3-BE0B-2A1318636750}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,10 +47,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{69CC5F5F-64C7-43E8-90E3-701CB6C38D0C} = {C668FC0A-FF77-4299-AA11-4D51A37F8AFB}
-		{E4C5F286-093D-49B5-9889-D91300CB44AD} = {C668FC0A-FF77-4299-AA11-4D51A37F8AFB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7ECDA39E-8696-40E6-9BF1-A8144A3BDC8F}
