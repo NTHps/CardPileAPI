@@ -136,7 +136,9 @@ namespace CardPile.WebApi
             => services.AddDbContext<IPersistenceContext, PersistenceContext>(options =>
             {
                 var _DataStorageOptions = configuration.GetSection("DataStorageSettings").Get<DataStorageOptions>();
-                options.UseSqlite(_DataStorageOptions.DatabaseConnectionString);
+
+                options.UseSqlServer(_DataStorageOptions.DatabaseConnectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+                    .EnableSensitiveDataLogging(sensitiveDataLoggingEnabled: true);
             });
 
         public static void AddSwaggerServices(this IServiceCollection services)

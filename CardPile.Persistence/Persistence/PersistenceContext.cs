@@ -1,5 +1,7 @@
 ﻿using CardPile.Application.Services.Persistence;
+using CardPile.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CardPile.Persistence.Persistence
 {
@@ -27,8 +29,13 @@ namespace CardPile.Persistence.Persistence
         void IPersistenceContext.Remove<TEntity>(TEntity entity)
             => this.Remove(entity);
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceContext).Assembly);
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    //            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceContext).Assembly);
+        //    base.OnModelCreating(modelBuilder);
+        //    modelBuilder.ApplyConfiguration(new CardConfiguration());
+        //    modelBuilder.ApplyConfiguration(new DeckListConfiguration());
+        //}
 
         #endregion IPersistenceContext Implementation
 
