@@ -3,7 +3,6 @@ using CardPileAPI.Infrastructure.Authentication.OAuth;
 using CardPileAPI.Infrastructure.Errors;
 using CardPileAPI.Infrastructure.Exceptions;
 using CardPileAPI.Presentation.Commands.OAuth;
-using CardPileAPI.Presentation.ViewModels.OAuth;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
