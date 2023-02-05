@@ -43,7 +43,7 @@ namespace CardPileAPI.Controllers
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(OAuthError), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<OAuthViewModel>> GetOAuthToken([FromBody] dynamic jsonData)
+        public async Task<IActionResult> GetOAuthToken([FromBody] dynamic jsonData)
         {
             JObject _JsonRequestObject = JsonConvert.DeserializeObject(jsonData.ToString());
 
@@ -55,11 +55,11 @@ namespace CardPileAPI.Controllers
 
             switch (_OAuthRequest.GrantType)
             {
-                case GrantTypes.Password:
+                case GrantTypes.Password: // Login using username and password
                     return await this.CreatePasswordGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
-                case GrantTypes.RefreshToken:
+                case GrantTypes.RefreshToken: // Login using refresh token
                     return await this.CreateRefreshTokenGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
-                case GrantTypes.ClientCredentials:
+                case GrantTypes.ClientCredentials: // Client credentials dw
                     return await this.CreateClientCredentialsOAuthToken(_JsonRequestObject, _OAuthRequest);
                 default:
                     throw new OAuthException(OAuthErrorValuesEnum.unsupported_grant_type);
@@ -84,7 +84,7 @@ namespace CardPileAPI.Controllers
                 throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
         }
 
-        private async Task<OAuthViewModel> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
+        private async Task<IActionResult> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
             //this.ValidateRequest(jsonRequest, typeof(CreateClientCredentialsOAuthTokenRequest));
 
@@ -92,27 +92,27 @@ namespace CardPileAPI.Controllers
             //var _CreateClientCredentialsResponse = await this.Mediator.Send(_CreateClientCredentialsRequest);
             //return this.m_Mapper.Map<OAuthViewModel>(_CreateClientCredentialsResponse);
 
-            return new OAuthViewModel();
+            return default;
         }
 
-        private async Task<OAuthViewModel> CreatePasswordGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
+        private async Task<IActionResult> CreatePasswordGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
             //this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenRequest));
             //var _CreatePasswordGrantRequest = this.Mapper.Map<CreatePasswordGrantOAuthTokenRequest>(request);
             //var _CreatePasswordGrantResponse = await this.Mediator.Send(_CreatePasswordGrantRequest);
             //return this.m_Mapper.Map<OAuthViewModel>(_CreatePasswordGrantResponse);
 
-            return new OAuthViewModel();
+            return default;
         }
 
-        private async Task<OAuthViewModel> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
+        private async Task<IActionResult> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
             //this.ValidateRequest(jsonRequest, typeof(CreateRefreshTokenGrantOAuthTokenRequest));
             //var _CreateRefreshTokenGrantRequest = this.Mapper.Map<CreateRefreshTokenGrantOAuthTokenRequest>(request);
             //var _CreateRefreshTokenGrantResponse = await this.Mediator.Send(_CreateRefreshTokenGrantRequest);
             //return this.m_Mapper.Map<OAuthViewModel>(_CreateRefreshTokenGrantResponse);
 
-            return new OAuthViewModel();
+            return default;
         }
 
         #endregion Private Methods

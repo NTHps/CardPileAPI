@@ -11,7 +11,7 @@ namespace CardPile.Domain.Entities
         public long AccountID { get; set; }
         public DateTime CreatedOnUTC { get; set; }
         public string Email { get; set; }
-        public bool IsVerified { get; set; }
+        public Guid? GuestToken { get; set; }
         public Password Password { get; set; }
 
         #endregion Properties
