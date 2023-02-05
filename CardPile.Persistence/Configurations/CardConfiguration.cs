@@ -12,9 +12,11 @@ namespace CardPile.Persistence.Configurations
 
         public void Configure(EntityTypeBuilder<Card> entity)
         {
-            entity.ToTable("Card");
+            _ = entity.ToTable("Card");
 
-            entity.Property(e => e.CardID);
+            _ = entity.HasKey(e => e.CardID);
+            _ = entity.Property(e => e.CardID)
+                .ValueGeneratedOnAdd();
 
             entity.Property(e => e.Name)
                 .IsRequired();

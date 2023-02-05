@@ -1,4 +1,5 @@
 ﻿using CardPile.Application.UseCases.Cards.CreateCard;
+using CardPile.Application.UseCases.Cards.DeleteCard;
 using CleanArchitecture.Mediator;
 
 namespace CardPile.InterfaceAdapters.Controllers
@@ -24,6 +25,9 @@ namespace CardPile.InterfaceAdapters.Controllers
 
         public Task CreateCardAsync(CreateCardInputPort inputPort, ICreateCardOutputPort outputPort, CancellationToken cancellationToken)
             => this.m_UseCaseInvoker.InvokeUseCaseAsync(inputPort, outputPort, cancellationToken);
+
+        public Task DeleteCardAsync(DeleteCardInputPort inputPort, IDeleteCardOutputPort outputPort, CancellationToken cancellationToken)
+           => this.m_UseCaseInvoker.InvokeUseCaseAsync(inputPort, outputPort, cancellationToken);
 
         #endregion Methods
 
