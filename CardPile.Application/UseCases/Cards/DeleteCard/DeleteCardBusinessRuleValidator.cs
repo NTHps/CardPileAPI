@@ -25,16 +25,10 @@ namespace CardPile.Application.UseCases.Cards.DeleteCard
 
         #region - - - - - - Methods - - - - - -
 
-        public async Task<CleanValidationResult> ValidateAsync(DeleteCardInputPort inputPort, CancellationToken cancellationToken)
-        {
-            var _Decks = this.m_PersistenceContext.GetEntities<DeckList>();
-            if (_Decks.Any(deck => deck.Cards.Any(c => c.CardID == inputPort.CardID)))
-                return new CleanValidationResult(new List<ValidationFailure>() { new ValidationFailure(string.Empty, "You cannot delete an Ingredient that is being used by a recipe.") });
-            else
-                return new CleanValidationResult(new List<ValidationFailure>());
-
-            // this is completely wrong, fix when concious 
-        }
+        public Task<CleanValidationResult> ValidateAsync(DeleteCardInputPort inputPort, CancellationToken cancellationToken)
+            => this.m_PersistenceContext.GetEntities<DeckList>().Where(ri => ri.Cards.Any(c => c.CardID == inputPort.CardID)).Any()
+                        ? Task.FromResult(new CleanValidationResult(new List<ValidationFailure>() { new ValidationFailure(string.Empty, "You cannot delete a Card that is being used in a Deck.") }))
+                        : Task.FromResult(new CleanValidationResult(new List<ValidationFailure>()));
 
         #endregion Methods
 
