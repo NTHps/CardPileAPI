@@ -2,7 +2,6 @@
 using CardPile.Application.Infrastructure.Validation;
 using CardPile.Application.Services.Persistence;
 using CardPile.Persistence.Persistence;
-using CardPileAPI.Infrastructure.Authentication;
 using CardPileAPI.Infrastructure.Configuration;
 using CardPileAPI.Infrastructure.ModelBinding;
 using CardPileAPI.Services.Swagger;
@@ -103,7 +102,6 @@ namespace CardPile.WebApi
 
         public static void AddAuthenticationServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthenticatedClaimsPrincipalProvider, AuthenticatedClaimsPrincipalProvider>();
             services.AddHttpContextAccessor();
         }
 

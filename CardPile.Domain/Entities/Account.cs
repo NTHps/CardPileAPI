@@ -13,6 +13,7 @@ namespace CardPile.Domain.Entities
         public string Email { get; set; }
         public Guid? GuestToken { get; set; }
         public Password Password { get; set; }
+        public string UserName { get; set; }
 
         #endregion Properties
 

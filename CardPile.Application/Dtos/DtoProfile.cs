@@ -14,6 +14,8 @@ namespace CardPile.Application.Dtos
             {
                 _ = this.CreateMap<CardDto, Card>();
                 _ = this.CreateMap<Card, CardDto>();
+
+                _ = this.CreateMap<Account, AccountDto>();
             }
 
             #endregion Constructors
