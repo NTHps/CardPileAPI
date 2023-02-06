@@ -8,10 +8,13 @@ using CardPileAPI.Services.Swagger;
 using CleanArchitecture.Mediator.Authentication;
 using CleanArchitecture.Mediator.DependencyInjection;
 using CleanArchitecture.Mediator.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CardPile.WebApi
@@ -40,7 +43,7 @@ namespace CardPile.WebApi
             this.ConfigureAppContextSettings(services);
 
             services.AddApiControllers();
-            services.AddAuthenticationServices();
+            services.AddAuthenticationServices(this.Configuration);
             services.AddAutoMapperService();
             services.AddCleanArchitectureServices();
             services.AddCors();
@@ -100,9 +103,23 @@ namespace CardPile.WebApi
             }
             ).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-        public static void AddAuthenticationServices(this IServiceCollection services)
+        public static void AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                };
+            });
         }
 
         public static void AddAutoMapperService(this IServiceCollection services)

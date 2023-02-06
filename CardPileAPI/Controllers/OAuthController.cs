@@ -1,118 +1,146 @@
-﻿//using AutoMapper;
-//using CardPileAPI.Presentation.Commands.OAuth;
-//using Microsoft.AspNetCore.Mvc;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
-//using System.Net;
-//using System.Reflection;
+﻿using AutoMapper;
+using CardPile.Application.Errors;
+using CardPile.Application.Exceptions;
+using CardPile.Application.Services.Security.Authentication.OAuth;
+using CardPileAPI.Presentation.Commands.OAuth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Reflection;
+using System.Text;
 
-//namespace CardPileAPI.Controllers
-//{
+namespace CardPileAPI.Controllers
+{
 
-//    public class OAuthController : BaseController
-//    {
+    [ApiController]
+    public class OAuthController : BaseController
+    {
 
-//        #region - - - - - - Fields - - - - - -
+        #region - - - - - - Fields - - - - - -
 
-//        private readonly IMapper m_Mapper;
+        private readonly IConfiguration m_Configuration;
+        private readonly IMapper m_Mapper;
 
-//        #endregion Fields
+        #endregion Fields
 
-//        #region - - - - - - Constructors - - - - - -
+        #region - - - - - - Constructors - - - - - -
 
-//        public OAuthController(IMapper mapper)
-//        {
-//            this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-//        }
+        public OAuthController(IConfiguration configuration, IMapper mapper)
+        {
+            this.m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
 
-//        #endregion Constructors
+        #endregion Constructors
 
-//        #region - - - - - - OAuth - - - - - -
+        #region - - - - - - OAuth - - - - - -
 
-//        /// <summary>
-//        /// Get the access token.
-//        /// </summary>
-//        /// <param name="jsonData">An OAuth2.0 request</param>
-//        /// <returns>An OAuth2.0 response</returns>
-//        /// <remarks>Implemented Grants: Password, Client Credentials, Refresh.</remarks>
-//        /// <exception cref="OAuthException"></exception>
-//        [HttpPost]
-//        [ProducesResponseType((int)HttpStatusCode.OK)]
-//        [ProducesResponseType(typeof(OAuthError), (int)HttpStatusCode.BadRequest)]
-//        public async Task<IActionResult> GetOAuthToken([FromBody] dynamic jsonData)
-//        {
-//            JObject _JsonRequestObject = JsonConvert.DeserializeObject(jsonData.ToString());
+        /// <summary>
+        /// Get the access token.
+        /// </summary>
+        /// <param name="jsonData">An OAuth2.0 request</param>
+        /// <returns>An OAuth2.0 response</returns>
+        /// <remarks>Implemented Grants: Password, Client Credentials, Refresh.</remarks>
+        /// <exception cref="OAuthException"></exception>
+        [HttpPost]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OAuthError), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetOAuthToken([FromBody] dynamic jsonData)
+        {
+            JObject _JsonRequestObject = JsonConvert.DeserializeObject(jsonData.ToString());
 
-//            OAuthCommand _OAuthRequest = JsonConvert.DeserializeObject<OAuthCommand>(jsonData.ToString())
-//                ?? throw new OAuthException(OAuthErrorValuesEnum.invalid_request);
+            OAuthCommand _OAuthRequest = JsonConvert.DeserializeObject<OAuthCommand>(jsonData.ToString())
+                ?? throw new OAuthException(OAuthErrorValuesEnum.invalid_request);
 
-//            if (string.IsNullOrEmpty(_OAuthRequest.GrantType))
-//                throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
+            if (string.IsNullOrEmpty(_OAuthRequest.GrantType))
+                throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
 
-//            switch (_OAuthRequest.GrantType)
-//            {
-//                case GrantTypes.Password: // Login using username and password
-//                    return await this.CreatePasswordGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
-//                case GrantTypes.RefreshToken: // Login using refresh token
-//                    return await this.CreateRefreshTokenGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
-//                case GrantTypes.ClientCredentials: // Client credentials dw
-//                    return await this.CreateClientCredentialsOAuthToken(_JsonRequestObject, _OAuthRequest);
-//                default:
-//                    throw new OAuthException(OAuthErrorValuesEnum.unsupported_grant_type);
-//            }
-//        }
+            switch (_OAuthRequest.GrantType)
+            {
+                case GrantTypes.Password: // Login using username and password
+                    return await this.CreatePasswordGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
+                case GrantTypes.RefreshToken: // Login using refresh token
+                    return await this.CreateRefreshTokenGrantOAuthToken(_JsonRequestObject, _OAuthRequest);
+                case GrantTypes.ClientCredentials: // Client credentials dw
+                    return await this.CreateClientCredentialsOAuthToken(_JsonRequestObject, _OAuthRequest);
+                default:
+                    throw new OAuthException(OAuthErrorValuesEnum.unsupported_grant_type);
+            }
+        }
 
-//        #endregion OAuth
+        #endregion OAuth
 
-//        #region - - - - - - Private Methods - - - - - -
+        #region - - - - - - Private Methods - - - - - -
 
-//        private void ValidateRequest(JObject jsonRequest, Type requestType)
-//        {
-//            var _RequestTypeProperties = requestType.GetProperties()
-//                .SelectMany(p => p.GetCustomAttributes<JsonPropertyAttribute>()
-//                    .Select(ca => ca.PropertyName))
-//                .ToList();
+        private void ValidateRequest(JObject jsonRequest, Type requestType)
+        {
+            var _RequestTypeProperties = requestType.GetProperties()
+                .SelectMany(p => p.GetCustomAttributes<JsonPropertyAttribute>()
+                    .Select(ca => ca.PropertyName))
+                .ToList();
 
-//            var _JsonRequestProperties = jsonRequest.Properties().ToList().Select(j => j.Name.ToString()).ToList();
-//            var _PropertyComparison = _RequestTypeProperties.Except(_JsonRequestProperties, StringComparer.CurrentCultureIgnoreCase).ToList();
+            var _JsonRequestProperties = jsonRequest.Properties().ToList().Select(j => j.Name.ToString()).ToList();
+            var _PropertyComparison = _RequestTypeProperties.Except(_JsonRequestProperties, StringComparer.CurrentCultureIgnoreCase).ToList();
 
-//            if (_PropertyComparison.Any() || _JsonRequestProperties.Count != _RequestTypeProperties.Count())
-//                throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
-//        }
+            if (_PropertyComparison.Any() || _JsonRequestProperties.Count != _RequestTypeProperties.Count())
+                throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
+        }
 
-//        private async Task<IActionResult> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
-//        {
-//            //this.ValidateRequest(jsonRequest, typeof(CreateClientCredentialsOAuthTokenRequest));
+        private string GenerateJSONWebToken(OAuthCommand command)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.m_Configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-//            //var _CreateClientCredentialsRequest = this.Mapper.Map<CreateClientCredentialsOAuthTokenRequest>(request);
-//            //var _CreateClientCredentialsResponse = await this.Mediator.Send(_CreateClientCredentialsRequest);
-//            //return this.m_Mapper.Map<OAuthViewModel>(_CreateClientCredentialsResponse);
+            var token = new JwtSecurityToken(
+                this.m_Configuration["Jwt:Issuer"],
+                this.m_Configuration["Jwt:Issuer"],
+                null,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
 
-//            return default;
-//        }
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
-//        private async Task<IActionResult> CreatePasswordGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
-//        {
-//            //this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenRequest));
-//            //var _CreatePasswordGrantRequest = this.Mapper.Map<CreatePasswordGrantOAuthTokenRequest>(request);
-//            //var _CreatePasswordGrantResponse = await this.Mediator.Send(_CreatePasswordGrantRequest);
-//            //return this.m_Mapper.Map<OAuthViewModel>(_CreatePasswordGrantResponse);
+        private async Task<IActionResult> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
+        {
+            //this.ValidateRequest(jsonRequest, typeof(CreateClientCredentialsOAuthTokenRequest));
 
-//            return default;
-//        }
+            //var _CreateClientCredentialsRequest = this.Mapper.Map<CreateClientCredentialsOAuthTokenRequest>(request);
+            //var _CreateClientCredentialsResponse = await this.Mediator.Send(_CreateClientCredentialsRequest);
+            //return this.m_Mapper.Map<OAuthViewModel>(_CreateClientCredentialsResponse);
 
-//        private async Task<IActionResult> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
-//        {
-//            //this.ValidateRequest(jsonRequest, typeof(CreateRefreshTokenGrantOAuthTokenRequest));
-//            //var _CreateRefreshTokenGrantRequest = this.Mapper.Map<CreateRefreshTokenGrantOAuthTokenRequest>(request);
-//            //var _CreateRefreshTokenGrantResponse = await this.Mediator.Send(_CreateRefreshTokenGrantRequest);
-//            //return this.m_Mapper.Map<OAuthViewModel>(_CreateRefreshTokenGrantResponse);
+            return default;
+        }
 
-//            return default;
-//        }
+        private async Task<IActionResult> CreatePasswordGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
+        {
+            //this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenRequest));
+            //var _CreatePasswordGrantRequest = this.Mapper.Map<CreatePasswordGrantOAuthTokenRequest>(request);
+            //var _CreatePasswordGrantResponse = await this.Mediator.Send(_CreatePasswordGrantRequest);
+            //return this.m_Mapper.Map<OAuthViewModel>(_CreatePasswordGrantResponse);
 
-//        #endregion Private Methods
+            var _T = this.GenerateJSONWebToken(request);
 
-//    }
+            return default;
+        }
 
-//}
+        private async Task<IActionResult> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
+        {
+            //this.ValidateRequest(jsonRequest, typeof(CreateRefreshTokenGrantOAuthTokenRequest));
+            //var _CreateRefreshTokenGrantRequest = this.Mapper.Map<CreateRefreshTokenGrantOAuthTokenRequest>(request);
+            //var _CreateRefreshTokenGrantResponse = await this.Mediator.Send(_CreateRefreshTokenGrantRequest);
+            //return this.m_Mapper.Map<OAuthViewModel>(_CreateRefreshTokenGrantResponse);
+
+            return default;
+        }
+
+        #endregion Private Methods
+
+    }
+
+}
