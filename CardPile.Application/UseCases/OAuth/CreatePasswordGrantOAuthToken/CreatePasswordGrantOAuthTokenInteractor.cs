@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CardPile.Application.Services.Persistence;
-using CardPile.Application.Services.Security.Authentication;
 using CardPile.Domain.Entities;
 using CleanArchitecture.Mediator;
 
@@ -14,17 +13,15 @@ namespace CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken
 
         private readonly IMapper m_Mapper;
         private readonly IPersistenceContext m_PersistenceContext;
-        private readonly IJWTFactory m_TokenFactory;
 
         #endregion Fields
 
         #region - - - - - - Constructors - - - - - -
 
-        public CreatePasswordGrantOAuthTokenInteractor(IMapper mapper, IPersistenceContext persistenceContext, IJWTFactory tokenFactory)
+        public CreatePasswordGrantOAuthTokenInteractor(IMapper mapper, IPersistenceContext persistenceContext)
         {
             this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             this.m_PersistenceContext = persistenceContext ?? throw new ArgumentNullException(nameof(persistenceContext));
-            this.m_TokenFactory = tokenFactory ?? throw new ArgumentNullException(nameof(tokenFactory));
         }
 
         #endregion Constructors
@@ -40,8 +37,8 @@ namespace CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken
 
             var _Response = new CreatePasswordGrantOAuthTokenResponse()
             {
-                AccessToken = this.m_TokenFactory.CreateToken(),
-                RefreshToken = this.m_TokenFactory.CreateToken(),
+                AccessToken = "",
+                RefreshToken = "",
                 AccountID = _Account.AccountID,
                 GrantType = "",
                 Scope = "",

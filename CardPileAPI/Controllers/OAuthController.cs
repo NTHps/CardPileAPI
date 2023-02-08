@@ -2,7 +2,9 @@
 using CardPile.Application.Errors;
 using CardPile.Application.Exceptions;
 using CardPile.Application.Services.Security.Authentication.OAuth;
+using CardPileAPI.Infrastructure.Security.Authentication;
 using CardPileAPI.Presentation.Commands.OAuth;
+using CardPileAPI.Services.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +24,7 @@ namespace CardPileAPI.Controllers
 
         #region - - - - - - Fields - - - - - -
 
+        private readonly ICustomAuthenticationManager m_AuthenticationManager;
         private readonly IConfiguration m_Configuration;
         private readonly IMapper m_Mapper;
 
@@ -29,8 +32,9 @@ namespace CardPileAPI.Controllers
 
         #region - - - - - - Constructors - - - - - -
 
-        public OAuthController(IConfiguration configuration, IMapper mapper)
+        public OAuthController(ICustomAuthenticationManager authenticationManager, IConfiguration configuration, IMapper mapper)
         {
+            this.m_AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
             this.m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -124,9 +128,12 @@ namespace CardPileAPI.Controllers
             //var _CreatePasswordGrantResponse = await this.Mediator.Send(_CreatePasswordGrantRequest);
             //return this.m_Mapper.Map<OAuthViewModel>(_CreatePasswordGrantResponse);
 
-            var _T = this.GenerateJSONWebToken(request);
+            //var _T = this.GenerateJSONWebToken(request);
 
-            return default;
+            var token = await this.m_AuthenticationManager.AuthenticateAsync(request.Username, request.Password);
+            if (token == null)
+                return Unauthorized();
+            return Ok(token);
         }
 
         private async Task<IActionResult> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
