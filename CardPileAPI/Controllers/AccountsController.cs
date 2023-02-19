@@ -5,6 +5,7 @@ using CardPile.InterfaceAdapters.Controllers;
 using CardPileAPI.Presentation.Commands.Accounts;
 using CardPileAPI.Presentation.Presenters.Accounts;
 using CardPileAPI.Presentation.ViewModels.Accounts.RegisterAccount;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -35,6 +36,7 @@ namespace CardPileAPI.Controllers
         #region - - - - - - Methods - - - - - -
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(RegisterAccountResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RegisterAccount([FromBody] RegisterCompanyCommand command)

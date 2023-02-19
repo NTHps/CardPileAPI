@@ -106,8 +106,6 @@ namespace CardPile.WebApi
         public static void AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
-            var tokenKey = configuration.GetValue<string>("TokenKey");
-            var key = Encoding.ASCII.GetBytes(tokenKey);
 
             services.AddAuthentication("Basic")
                 .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
