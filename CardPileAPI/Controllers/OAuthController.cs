@@ -2,18 +2,14 @@
 using CardPile.Application.Errors;
 using CardPile.Application.Exceptions;
 using CardPile.Application.Services.Security.Authentication.OAuth;
-using CardPileAPI.Infrastructure.Security.Authentication;
 using CardPileAPI.Presentation.Commands.OAuth;
 using CardPileAPI.Services.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
-using System.Text;
 
 namespace CardPileAPI.Controllers
 {
@@ -95,21 +91,6 @@ namespace CardPileAPI.Controllers
                 throw new OAuthException(OAuthErrorValuesEnum.invalid_request, "Invalid request.");
         }
 
-        private string GenerateJSONWebToken(OAuthCommand command)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.m_Configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                this.m_Configuration["Jwt:Issuer"],
-                this.m_Configuration["Jwt:Issuer"],
-                null,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
         private async Task<IActionResult> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
             //this.ValidateRequest(jsonRequest, typeof(CreateClientCredentialsOAuthTokenRequest));
@@ -130,7 +111,7 @@ namespace CardPileAPI.Controllers
 
             //var _T = this.GenerateJSONWebToken(request);
 
-            var token = await this.m_AuthenticationManager.AuthenticateAsync(request.Username, request.Password);
+            var token = await this.m_AuthenticationManager.AuthenticateAsync(request.ClientID, request.Username, request.Password);
             if (token == null)
                 return Unauthorized();
             return Ok(token);

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CardPile.Application.Services.Persistence;
+﻿using CardPile.Application.Services.Persistence;
 using CardPile.Domain.Entities;
 using CleanArchitecture.Mediator;
 
@@ -11,16 +10,14 @@ namespace CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken
 
         #region - - - - - - Fields - - - - - -
 
-        private readonly IMapper m_Mapper;
         private readonly IPersistenceContext m_PersistenceContext;
 
         #endregion Fields
 
         #region - - - - - - Constructors - - - - - -
 
-        public CreatePasswordGrantOAuthTokenInteractor(IMapper mapper, IPersistenceContext persistenceContext)
+        public CreatePasswordGrantOAuthTokenInteractor(IPersistenceContext persistenceContext)
         {
-            this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             this.m_PersistenceContext = persistenceContext ?? throw new ArgumentNullException(nameof(persistenceContext));
         }
 

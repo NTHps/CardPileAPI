@@ -1,4 +1,5 @@
-﻿using CardPileAPI.Services.Security.Authentication;
+﻿using CardPile.Application.Services.Persistence;
+using CardPile.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
@@ -12,7 +13,7 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
 
         #region - - - - - - Fields - - - - - -
 
-        private readonly ICustomAuthenticationManager m_CustomAuthenticationManager;
+        private readonly IPersistenceContext m_PersistenceContext;
 
         #endregion Fields
 
@@ -23,10 +24,10 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ICustomAuthenticationManager customAuthenticationManager)
+            IPersistenceContext persistenceContext)
             : base(options, logger, encoder, clock)
         {
-            this.m_CustomAuthenticationManager = customAuthenticationManager;
+            this.m_PersistenceContext = persistenceContext;
         }
 
         #endregion Constructor
@@ -56,7 +57,7 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
 
             try
             {
-                return ValidateToken(token);
+                return await this.ValidateToken(token);
             }
             catch (Exception ex)
             {
@@ -64,22 +65,21 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
             }
         }
 
-        private AuthenticateResult ValidateToken(string token)
+        private async Task<AuthenticateResult> ValidateToken(string token)
         {
-            var validatedToken = m_CustomAuthenticationManager.Tokens.FirstOrDefault(t => t.Key == token);
-            if (validatedToken.Key == null)
-            {
-                return AuthenticateResult.Fail("Unauthorized");
-            }
-            var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, validatedToken.Value),
-                };
+            var _UserToken = this.m_PersistenceContext.GetEntities<UserToken>()
+                .Where(ut => ut.Token == token)
+                .SingleOrDefault();
 
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new System.Security.Principal.GenericPrincipal(identity, null);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-            return AuthenticateResult.Success(ticket);
+            if (_UserToken == null || string.IsNullOrEmpty(_UserToken.Token))
+                return AuthenticateResult.Fail("Unauthorized");
+
+            var _Claims = new List<Claim> { new Claim(ClaimTypes.Name, _UserToken.Token) };
+
+            var _Identity = new ClaimsIdentity(_Claims, Scheme.Name);
+            var _Principal = new System.Security.Principal.GenericPrincipal(_Identity, null);
+            var _Ticket = new AuthenticationTicket(_Principal, Scheme.Name);
+            return AuthenticateResult.Success(_Ticket);
         }
     }
 

@@ -6,6 +6,7 @@ using CardPile.Application.Services.Security.Authentication;
 using CardPile.Domain.Entities;
 using CardPileAPI.Services.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace CardPileAPI.Infrastructure.Security.Authentication
 {
@@ -17,8 +18,6 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
 
         private readonly IPasswordValidator m_PasswordValidator;
         private readonly IPersistenceContext m_PersistenceContext;
-
-        private readonly IDictionary<string, string> m_Tokens = new Dictionary<string, string>();
 
         #endregion Fields
 
@@ -32,15 +31,9 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
 
         #endregion Constructors
 
-        #region - - - - - - Properties - - - - - -
-
-        public IDictionary<string, string> Tokens => m_Tokens;
-
-        #endregion Properties
-
         #region - - - - - - CustomAuthenticationManager Implementation - - - - - -
 
-        public async Task<string> AuthenticateAsync(string username, string password)
+        public async Task<string> AuthenticateAsync(long clientID, string username, string password)
         {
             // Check if account exists
             var _Account = await this.m_PersistenceContext.GetEntities<Account>()
@@ -51,11 +44,32 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
             // Validate password
             await this.m_PasswordValidator.ValidatePasswordAsync(_Account, password, CancellationToken.None);
 
-            // Generate token, save it 
-            var _Token = Guid.NewGuid().ToString();
-            this.m_Tokens.Add(_Token, username);
+            var _UserToken = await this.m_PersistenceContext.GetEntities<UserToken>()
+                .SingleOrDefaultAsync(ut => ut.Username == username);
 
-            return _Token;
+            var _ClientApplication = await this.m_PersistenceContext.GetEntities<ClientApplication>()
+                .Where(ca => ca.ClientApplicationID == clientID)
+                .SingleOrDefaultAsync()
+                    ?? throw new OAuthException(OAuthErrorValuesEnum.invalid_client, "Invalid Client.");
+
+            // TODO: Make some sort of token factory
+            var _NewToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Guid.NewGuid()}:{Guid.NewGuid()}"));
+
+            if (_UserToken == null)
+            {
+                _UserToken = new UserToken()
+                {
+                    Username = username,
+                    Token = _NewToken
+                };
+                this.m_PersistenceContext.Add(_UserToken);
+            }
+            else
+                _UserToken.Token = _NewToken;
+
+            await this.m_PersistenceContext.SaveChangesAsync(CancellationToken.None);
+
+            return _UserToken.Token;
         }
 
         #endregion CustomAuthenticationManager Implementation

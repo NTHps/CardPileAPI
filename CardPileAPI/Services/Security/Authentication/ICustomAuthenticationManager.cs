@@ -5,9 +5,7 @@
     {
 
 
-        Task<string> AuthenticateAsync(string username, string password);
-
-        IDictionary<string, string> Tokens { get; }
+        Task<string> AuthenticateAsync(long clientID, string username, string password);
 
     }
 
