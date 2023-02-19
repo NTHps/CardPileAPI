@@ -4,6 +4,7 @@ using CardPile.Persistence.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardPile.Persistence.Migrations
 {
     [DbContext(typeof(PersistenceContext))]
-    partial class PersistenceContextModelSnapshot : ModelSnapshot
+    [Migration("20230218033938_client-application")]
+    partial class clientapplication
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,26 +134,6 @@ namespace CardPile.Persistence.Migrations
                     b.HasKey("DeckListID");
 
                     b.ToTable("DeckList", (string)null);
-                });
-
-            modelBuilder.Entity("CardPile.Domain.Entities.UserToken", b =>
-                {
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Username");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Username");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_UserToken");
-
-                    b.ToTable("UserToken", (string)null);
                 });
 
             modelBuilder.Entity("CardPile.Domain.Entities.Account", b =>

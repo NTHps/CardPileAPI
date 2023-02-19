@@ -6,12 +6,14 @@ using CardPile.InterfaceAdapters.Controllers;
 using CardPileAPI.Presentation.Commands.Cards;
 using CardPileAPI.Presentation.Presenters.Cards;
 using CardPileAPI.Presentation.ViewModels.Cards;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace CardPileAPI.Controllers
 {
 
+    [Authorize]
     public class CardsController : BaseController
     {
 

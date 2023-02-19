@@ -1,5 +1,4 @@
 ﻿using CardPile.Application.Services.Persistence;
-using CardPile.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -33,6 +32,8 @@ namespace CardPile.Persistence.Persistence
             => modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceContext).Assembly);
 
         // Writing this here for future me: EntityFrameworkCore\Add-Migration CardPileDB -Context PersistenceContext
+        // Add-Migration 'whatever'
+        // Update-Databse || just run the api, we do it onm startup
 
         #endregion IPersistenceContext Implementation
 

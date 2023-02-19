@@ -1,18 +1,20 @@
 ﻿using CardPile.Application.Infrastructure.Authorisation;
+using CardPile.Application.Infrastructure.Security.Authentication;
 using CardPile.Application.Infrastructure.Validation;
 using CardPile.Application.Services.Persistence;
+using CardPile.Application.Services.Security.Authentication;
 using CardPile.Persistence.Persistence;
-using CardPileAPI.Infrastructure.Authentication;
 using CardPileAPI.Infrastructure.Configuration;
 using CardPileAPI.Infrastructure.ModelBinding;
+using CardPileAPI.Infrastructure.Security.Authentication;
+using CardPileAPI.Services.Security.Authentication;
 using CardPileAPI.Services.Swagger;
-using CleanArchitecture.Mediator.Authentication;
 using CleanArchitecture.Mediator.DependencyInjection;
 using CleanArchitecture.Mediator.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CardPile.WebApi
@@ -41,7 +43,7 @@ namespace CardPile.WebApi
             this.ConfigureAppContextSettings(services);
 
             services.AddApiControllers();
-            services.AddAuthenticationServices();
+            services.AddAuthenticationServices(this.Configuration);
             services.AddAutoMapperService();
             services.AddCleanArchitectureServices();
             services.AddCors();
@@ -101,10 +103,16 @@ namespace CardPile.WebApi
             }
             ).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-        public static void AddAuthenticationServices(this IServiceCollection services)
+        public static void AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IAuthenticatedClaimsPrincipalProvider, AuthenticatedClaimsPrincipalProvider>();
             services.AddHttpContextAccessor();
+
+            services.AddAuthentication("Basic")
+                .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
+
+            services.AddTransient<ICustomAuthenticationManager, CustomAuthenticationManager>();
+
+            services.AddTransient<IPasswordValidator, PasswordValidator>();
         }
 
         public static void AddAutoMapperService(this IServiceCollection services)

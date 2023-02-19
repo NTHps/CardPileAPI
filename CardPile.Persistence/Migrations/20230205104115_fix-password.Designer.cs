@@ -4,6 +4,7 @@ using CardPile.Persistence.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardPile.Persistence.Migrations
 {
     [DbContext(typeof(PersistenceContext))]
-    partial class PersistenceContextModelSnapshot : ModelSnapshot
+    [Migration("20230205104115_fix-password")]
+    partial class fixpassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,40 +85,6 @@ namespace CardPile.Persistence.Migrations
                     b.ToTable("Card", (string)null);
                 });
 
-            modelBuilder.Entity("CardPile.Domain.Entities.ClientApplication", b =>
-                {
-                    b.Property<long>("ClientApplicationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ClientApplicationID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ClientApplicationID"));
-
-                    b.Property<string>("AccessToken")
-                        .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Secret")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("ClientApplicationID");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_ClientApplication_Name");
-
-                    b.ToTable("ClientApplication", (string)null);
-                });
-
             modelBuilder.Entity("CardPile.Domain.Entities.DeckList", b =>
                 {
                     b.Property<long>("DeckListID")
@@ -131,26 +100,6 @@ namespace CardPile.Persistence.Migrations
                     b.HasKey("DeckListID");
 
                     b.ToTable("DeckList", (string)null);
-                });
-
-            modelBuilder.Entity("CardPile.Domain.Entities.UserToken", b =>
-                {
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Username");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Username");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_UserToken");
-
-                    b.ToTable("UserToken", (string)null);
                 });
 
             modelBuilder.Entity("CardPile.Domain.Entities.Account", b =>
