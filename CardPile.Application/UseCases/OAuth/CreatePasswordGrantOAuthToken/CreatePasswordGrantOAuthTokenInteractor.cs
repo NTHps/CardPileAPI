@@ -39,8 +39,6 @@ namespace CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken
                  .Where(a => a.UserName == inputPort.Username)
                  .SingleOrDefaultAsync()
                     ?? throw new OAuthException(OAuthErrorValuesEnum.invalid_grant, "Invalid Username or Password."); ;
-            //if (_Account == null)
-            //    return outputPort.PresentUnauthenticatedAsync(cancellationToken);
 
             // Validate password
             await this.m_PasswordValidator.ValidatePasswordAsync(_Account, inputPort.Password, CancellationToken.None);
