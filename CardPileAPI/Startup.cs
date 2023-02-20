@@ -7,7 +7,6 @@ using CardPile.Persistence.Persistence;
 using CardPileAPI.Infrastructure.Configuration;
 using CardPileAPI.Infrastructure.ModelBinding;
 using CardPileAPI.Infrastructure.Security.Authentication;
-using CardPileAPI.Services.Security.Authentication;
 using CardPileAPI.Services.Swagger;
 using CleanArchitecture.Mediator.DependencyInjection;
 using CleanArchitecture.Mediator.Infrastructure;
@@ -109,8 +108,6 @@ namespace CardPile.WebApi
 
             services.AddAuthentication("Basic")
                 .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
-
-            services.AddTransient<ICustomAuthenticationManager, CustomAuthenticationManager>();
 
             services.AddTransient<IPasswordValidator, PasswordValidator>();
         }
