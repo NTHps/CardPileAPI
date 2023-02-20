@@ -2,8 +2,10 @@
 using CardPile.Application.Errors;
 using CardPile.Application.Exceptions;
 using CardPile.Application.Services.Security.Authentication.OAuth;
+using CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken;
+using CardPile.InterfaceAdapters.Controllers;
 using CardPileAPI.Presentation.Commands.OAuth;
-using CardPileAPI.Services.Security.Authentication;
+using CardPileAPI.Presentation.Presenters.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -20,19 +22,17 @@ namespace CardPileAPI.Controllers
 
         #region - - - - - - Fields - - - - - -
 
-        private readonly ICustomAuthenticationManager m_AuthenticationManager;
-        private readonly IConfiguration m_Configuration;
         private readonly IMapper m_Mapper;
+        private readonly OAuthIAController m_OAuthInterfaceAdapter;
 
         #endregion Fields
 
         #region - - - - - - Constructors - - - - - -
 
-        public OAuthController(ICustomAuthenticationManager authenticationManager, IConfiguration configuration, IMapper mapper)
+        public OAuthController(IMapper mapper, OAuthIAController oAuthIAController)
         {
-            this.m_AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
-            this.m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.m_Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.m_OAuthInterfaceAdapter = oAuthIAController ?? throw new ArgumentNullException(nameof(oAuthIAController));
         }
 
         #endregion Constructors
@@ -93,28 +93,33 @@ namespace CardPileAPI.Controllers
 
         private async Task<IActionResult> CreateClientCredentialsOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
-            //this.ValidateRequest(jsonRequest, typeof(CreateClientCredentialsOAuthTokenRequest));
+            this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenInputPort));
+
 
             //var _CreateClientCredentialsRequest = this.Mapper.Map<CreateClientCredentialsOAuthTokenRequest>(request);
             //var _CreateClientCredentialsResponse = await this.Mediator.Send(_CreateClientCredentialsRequest);
             //return this.m_Mapper.Map<OAuthViewModel>(_CreateClientCredentialsResponse);
+
+
 
             return default;
         }
 
         private async Task<IActionResult> CreatePasswordGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
         {
-            //this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenRequest));
-            //var _CreatePasswordGrantRequest = this.Mapper.Map<CreatePasswordGrantOAuthTokenRequest>(request);
-            //var _CreatePasswordGrantResponse = await this.Mediator.Send(_CreatePasswordGrantRequest);
-            //return this.m_Mapper.Map<OAuthViewModel>(_CreatePasswordGrantResponse);
+            this.ValidateRequest(jsonRequest, typeof(CreatePasswordGrantOAuthTokenInputPort));
+            var _CreatePasswordGrantRequest = this.m_Mapper.Map<CreatePasswordGrantOAuthTokenInputPort>(request);
 
-            //var _T = this.GenerateJSONWebToken(request);
+            var _Presenter = new CreatePasswordGrantOAuthTokenPresenter(this.m_Mapper);
 
-            var token = await this.m_AuthenticationManager.AuthenticateAsync(request.ClientID, request.Username, request.Password);
-            if (token == null)
-                return Unauthorized();
-            return Ok(token);
+            await this.m_OAuthInterfaceAdapter.CreatePasswordGrantOAuthToken(_CreatePasswordGrantRequest, _Presenter, CancellationToken.None);
+
+            return _Presenter.Result;
+
+            //var token = await this.m_AuthenticationManager.AuthenticateAsync(request.ClientID, request.Username, request.Password);
+            //if (token == null)
+            //    return Unauthorized();
+            //return Ok(token);
         }
 
         private async Task<IActionResult> CreateRefreshTokenGrantOAuthToken(JObject jsonRequest, OAuthCommand request)
