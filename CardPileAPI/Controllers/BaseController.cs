@@ -1,4 +1,4 @@
-﻿using CardPileAPI.Services.Attributes;
+﻿using CardPileAPI.Services.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
