@@ -23,8 +23,20 @@ namespace CardPile.Persistence.Configurations
                 .HasDatabaseName("UQ_UserToken")
                 .IsUnique();
 
+            // ExpiresIn
+            entity.Property(e => e.ExpiresIn);
+
+            // TokenType
+            entity.Property(e => e.TokenType)
+                .IsRequired(false);
+
+            // RefreshToken
+            entity.Property(e => e.RefreshToken)
+                 .HasMaxLength(500)
+                 .IsRequired(false);
+
             // Token
-            entity.Property(e => e.Token)
+            entity.Property(e => e.AccessToken)
                 .HasMaxLength(500)
                 .IsRequired();
         }

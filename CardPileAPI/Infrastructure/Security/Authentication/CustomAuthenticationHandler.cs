@@ -68,13 +68,13 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
         private async Task<AuthenticateResult> ValidateToken(string token)
         {
             var _UserToken = this.m_PersistenceContext.GetEntities<UserToken>()
-                .Where(ut => ut.Token == token)
+                .Where(ut => ut.AccessToken == token)
                 .SingleOrDefault();
 
-            if (_UserToken == null || string.IsNullOrEmpty(_UserToken.Token))
+            if (_UserToken == null || string.IsNullOrEmpty(_UserToken.AccessToken))
                 return AuthenticateResult.Fail("Unauthorized");
 
-            var _Claims = new List<Claim> { new Claim(ClaimTypes.Name, _UserToken.Token) };
+            var _Claims = new List<Claim> { new Claim(ClaimTypes.Name, _UserToken.AccessToken) };
 
             var _Identity = new ClaimsIdentity(_Claims, Scheme.Name);
             var _Principal = new System.Security.Principal.GenericPrincipal(_Identity, null);

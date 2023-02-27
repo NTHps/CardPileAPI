@@ -11,6 +11,8 @@
         public string Secret { get; set; }
         public string AccessToken { get; set; }
 
+        public ICollection<ClientApplicationScope> ClientApplicationScope { get; set; }
+
         #endregion Properties
 
     }

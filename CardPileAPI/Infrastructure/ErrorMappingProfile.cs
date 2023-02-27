@@ -15,6 +15,7 @@ namespace CardPileAPI.Infrastructure
 
         public ErrorMappingProfile()
         {
+            this.AddArgumentNullExceptionMapping();
             this.AddAuthorisationResultMapping();
             this.AddInvalidEnumExceptionMapping();
             this.AddCleanValidationResultMapping();
@@ -23,6 +24,21 @@ namespace CardPileAPI.Infrastructure
         #endregion Constructors
 
         #region - - - - - - Methods - - - - - -
+
+        private void AddArgumentNullExceptionMapping()
+            => this.CreateMap<ArgumentNullException, ValidationProblemDetails>()
+                .ConvertUsing((ne, vpd) =>
+                {
+                    var _Details = new ValidationProblemDetails
+                    {
+                        Status = (int)HttpStatusCode.BadRequest,
+                        Title = "Bad Request: Null Exception",
+                        Type = "https://httpstatuses.com/400",
+                    };
+                    _Details.Errors.Add(string.Empty, new string[] { ne.Message });
+
+                    return _Details;
+                });
 
         private void AddAuthorisationResultMapping()
             => this.CreateMap<AuthorisationResult, ProblemDetails>()
@@ -68,6 +84,7 @@ namespace CardPileAPI.Infrastructure
 
                     return _Details;
                 });
+
 
         #endregion Methods
 

@@ -3,6 +3,7 @@ using CardPile.Application.Infrastructure.Security.Authentication;
 using CardPile.Application.Infrastructure.Validation;
 using CardPile.Application.Services.Persistence;
 using CardPile.Application.Services.Security.Authentication;
+using CardPile.Application.Services.Security.Tokens;
 using CardPile.Persistence.Persistence;
 using CardPileAPI.Infrastructure.Configuration;
 using CardPileAPI.Infrastructure.ModelBinding;
@@ -109,7 +110,8 @@ namespace CardPile.WebApi
             services.AddAuthentication("Basic")
                 .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
 
-            services.AddTransient<IPasswordValidator, PasswordValidator>();
+            services.AddTransient<IPasswordValidator, PasswordValidator>()
+                .AddTransient<ITokenFactory, TokenFactory>();
         }
 
         public static void AddAutoMapperService(this IServiceCollection services)
