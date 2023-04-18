@@ -74,7 +74,10 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
             if (_UserToken == null || string.IsNullOrEmpty(_UserToken.AccessToken))
                 return AuthenticateResult.Fail("Unauthorized");
 
-            var _Claims = new List<Claim> { new Claim(ClaimTypes.Name, _UserToken.AccessToken) };
+            var _Claims = new List<Claim> {
+                new Claim(ClaimTypes.Name, _UserToken.AccessToken),
+                new Claim(ClaimTypes.NameIdentifier, _UserToken.AccountID.ToString())
+            };
 
             var _Identity = new ClaimsIdentity(_Claims, Scheme.Name);
             var _Principal = new System.Security.Principal.GenericPrincipal(_Identity, null);
