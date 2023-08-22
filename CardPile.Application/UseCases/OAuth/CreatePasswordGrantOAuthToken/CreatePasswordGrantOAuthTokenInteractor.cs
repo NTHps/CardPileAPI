@@ -75,7 +75,8 @@ namespace CardPile.Application.UseCases.OAuth.CreatePasswordGrantOAuthToken
                 _UserToken = new UserToken()
                 {
                     AccessToken = _NewToken.AccessToken,
-                    AccountID = _Account.AccountID
+                    AccountID = _Account.AccountID,
+                    Username = inputPort.Username
                 };
                 this.m_PersistenceContext.Add(_UserToken);
             }

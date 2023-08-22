@@ -17,7 +17,6 @@ namespace CardPileAPI.Infrastructure.Security.Authentication
 
         #endregion Fields
 
-
         #region - - - - - - Constructor - - - - - -
 
         public CustomAuthenticationHandler(IOptionsMonitor<BasicAuthenticationOptions> options,
